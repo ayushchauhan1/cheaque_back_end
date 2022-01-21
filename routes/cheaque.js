@@ -22,6 +22,8 @@ router.post("/generation", async function (req, res) {
   for (let i = 0; i < req.body.number; i++) {
     const cheaque = new Cheaque({
       usernameSender: req.body.username,
+      usernameReciever: "",
+      amount: "",
     });
     cheques.push(cheaque);
   }
@@ -54,6 +56,45 @@ router.post("/generation", async function (req, res) {
     res.status(400).json({ err: err });
   }
 });
-router.post("/sender", async function (req, res) {});
+router.get("/generation/send", async (req, res) => {
+  const sender = await Qrcodes.find().sort({ _id: -1 }).limit(req.body.number);
+  res.send(sender);
+});
+router.put("/sender", async function (req, res) {
+  // const sender = await Cheaque.findOne({ usernameSender: req.body.username });
+  // if (!sender) return res.status(400).send("Not a valid user");
+
+  await Cheaque.findOneAndUpdate(
+    { _id: req.body.id },
+    {
+      $set: {
+        usernameReciever: req.body.usernameReciever,
+        amount: req.body.amount,
+      },
+    },
+    { new: true },
+    (err, doc) => {
+      if (err) {
+        console.log("Something wrong when updating data!");
+      }
+      res.send(doc);
+      console.log(doc);
+    }
+  );
+
+  // if (check.usernameSender != req.body.username)
+  //   return res.status(400).send("Not a valid user");
+
+  // check.usernameReciever = req.body.usernameReciever;
+  // check({
+  //   usernameReciever: req.body.usernameReciever,
+  //   amount: req.body.amount,
+  // });
+  // check.amount = req.body.amount;
+  // console.log(check);
+  // await check.save();
+
+  // res.send(check);
+});
 
 module.exports = router;
