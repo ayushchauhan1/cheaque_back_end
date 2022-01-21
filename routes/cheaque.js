@@ -61,8 +61,9 @@ router.get("/generation/send", async (req, res) => {
   res.send(sender);
 });
 router.put("/sender", async function (req, res) {
-  // const sender = await Cheaque.findOne({ usernameSender: req.body.username });
-  // if (!sender) return res.status(400).send("Not a valid user");
+  const sender = await Cheaque.findOne({ _id: req.body.id });
+  if (sender.usernameSender != req.body.username)
+    return res.status(400).send("Not a valid user");
 
   await Cheaque.findOneAndUpdate(
     { _id: req.body.id },
