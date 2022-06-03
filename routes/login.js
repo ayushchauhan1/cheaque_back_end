@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../modals/user");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 // validation
 
@@ -21,7 +22,7 @@ router.post("/register", async function (req, res) {
 
   const salt = await bcrypt.genSalt(10);
   const hashPassword = await bcrypt.hash(req.body.password, salt);
-
+  // creating User
   const user = new User({
     name: req.body.name,
     accountNumber: req.body.accountNumber,
@@ -32,6 +33,8 @@ router.post("/register", async function (req, res) {
     username: req.body.username,
   });
   console.log(user);
+
+  res.status(201).json(user);
   try {
     const savedUser = await user.save();
     console.log(savedUser);
@@ -42,14 +45,20 @@ router.post("/register", async function (req, res) {
   }
 });
 
+// login
 router.post("/login", async (req, res) => {
   const user = await User.findOne({ username: req.body.username });
   if (!user) return res.status(400).send("username is wrong");
 
   const validPass = await bcrypt.compare(req.body.password, user.password);
   if (!validPass) return res.status(400).send("Invalid password");
+  let jwtSecretKey = process.env.JWT_SECRET_KEY;
 
-  res.send("Logged In");
+  const token = jwt.sign(user.toJSON(), jwtSecretKey);
+
+  res.send(token);
+
+  // res.send("Logged In");
 });
 
 module.exports = router;

@@ -5,7 +5,8 @@ const app = express();
 const bodyparser = require("body-parser");
 const login = require("./routes/login");
 const cheaque = require("./routes/cheaque");
-
+const dotenv = require("dotenv");
+dotenv.config();
 app.use(bodyparser.urlencoded({ extended: false }));
 app.use(bodyparser.json());
 
