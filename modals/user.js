@@ -1,3 +1,4 @@
+const { number } = require("joi");
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const Userschema = new Schema({
@@ -32,6 +33,10 @@ const Userschema = new Schema({
   username: {
     type: String,
     required: true,
+  },
+  amount: {
+    type: Number,
+    default: 5000,
   },
 });
 

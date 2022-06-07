@@ -3,7 +3,7 @@ const router = express.Router();
 const User = require("../modals/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
+const passport = require("passport");
 // validation
 
 router.post("/register", async function (req, res) {
@@ -44,7 +44,25 @@ router.post("/register", async function (req, res) {
     res.status(400).json({ err: err });
   }
 });
-
+router.get("/users", async (req, res) => {
+  const user = await User.find().sort({ _id: -1 });
+  res.send(user);
+});
+router.put("/addamount", async (req, res) => {
+  const user = await User.find({ username: req.body.username });
+  User.findOneAndUpdate(
+    { username: req.body.username },
+    { amount: user + req.body.amount },
+    { new: true },
+    (err, data) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.send(data);
+      }
+    }
+  );
+});
 // login
 router.post("/login", async (req, res) => {
   const user = await User.findOne({ username: req.body.username });
@@ -60,5 +78,14 @@ router.post("/login", async (req, res) => {
 
   // res.send("Logged In");
 });
+
+// router.get("/current", (req, res) => {
+//   // res.json({
+//   //   id: req.user.id,
+//   //   name: req.user.name,
+//   //   email: req.user.email,
+//   // });
+
+// });
 
 module.exports = router;
