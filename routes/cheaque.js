@@ -58,14 +58,32 @@ router.post("/generation", async function (req, res) {
     res.status(400).json({ err: err });
   }
 });
-router.get("/generation/send", async (req, res) => {
-  const sender = await Qrcodes.find().sort({ _id: -1 }).limit(req.body.number);
+router.get("/generation/send/:id", async (req, res) => {
+  const sender = await Qrcodes.find({ username: req.body.username })
+    .sort({ _id: -1 })
+    .limit(10);
   res.send(sender);
 });
 router.get("/issuedcheaques", async (req, res) => {
   const cheaque = await Cheaque.find({ usernameReciever: "" }).sort({
     _id: -1,
   });
+  res.send(cheaque);
+});
+router.get("/activecheaques/:username", async (req, res) => {
+  const cheaque = await Cheaque.find({
+    usernameSender: req.params.username,
+    status: false,
+  }).sort({
+    _id: -1,
+  });
+  res.send(cheaque);
+});
+router.get("/transcations/:username", async (req, res) => {
+  const cheaque = await Cheaque.find({
+    usernameSender: req.params.username,
+    status: true,
+  }).sort({ _id: -1 });
   res.send(cheaque);
 });
 router.get("/activecheaques", async (req, res) => {

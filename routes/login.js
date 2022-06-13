@@ -50,9 +50,12 @@ router.get("/users", async (req, res) => {
 });
 router.put("/addamount", async (req, res) => {
   const user = await User.find({ username: req.body.username });
+  if (!user) return res.status(400).send("User does'nt exists");
+  var number=req.body.amount;
+       
   User.findOneAndUpdate(
     { username: req.body.username },
-    { amount: user + req.body.amount },
+    { amount: number },
     { new: true },
     (err, data) => {
       if (err) {
